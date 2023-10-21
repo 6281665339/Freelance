@@ -1,0 +1,75 @@
+{% if session["role"] == 'Admin':%}
+    {% include 'adminHead.html' %}
+{% elif session["role"] == 'Client':%}
+    {% include 'clientHead.html' %}
+{% elif session["role"] == 'Developer':%}
+    {% include 'developerHead.html' %}
+{% else:%}
+    {% include 'head.html' %}
+{% endif %}
+
+<div class="container">
+     <div class="row">
+          <div class="col-md-4">
+            <div class="card mt-5 p-3" style="border-radius: 50px 20px;box-shadow: 5px 10px #888888;">
+                <div class="text-center mt-1" style="font-size:30px;color:black">Schedule Details</div>
+                {% for project in projects:%}
+                    {% for schedule in project['schedule']:%}
+                {% set client = get_client_id(project['client_id'])%}
+                {% set developer = get_developer_id_by_application(schedule['application_id'])%}
+                <div class="row">
+                     <div class="col-md-6 mt-3">
+                         <div class="text-muted">Client Name</div>
+                        <div class=""><b>
+                            <a href="viewClientDetails?client_id={{client['_id']}}">{{client['name']}}</a>
+                        </b></div>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                         <div class="text-muted">Developer Name</div>
+                        <div class=""><b>
+                            <a href="viewDeveloperDetails?developer_id={{developer['_id']}}">{{developer['name']}}</a>
+                        </b></div>
+                    </div>
+                </div>
+                 <div class="mt-1">
+                    <div class="text-muted">Project Title</div>
+                    <div class=""><b>
+                        <a href="viewProjectDetails?project_id={{project['_id']}}">{{project['project_title']}}</a>
+                    </b></div>
+                </div>
+                <div class="mt-1">
+                     <div class="text-muted">Date</div>
+                    <div class=""><b>{{schedule['date_time'].date()}} {{schedule['date_time'].strftime("%I")}}:{{schedule['date_time'].strftime("%M")}} {{schedule['date_time'].strftime("%p")}}</b></div>
+                </div>
+                <div class="mt-1">
+                     <div class="text-muted">Status</div>
+                    <div class=""><b>{{schedule['status']}}</b></div>
+                </div>
+                <div class="row">
+                    {% if session["role"] == 'Developer' and schedule['status'] == status_add_schedule:%}
+                    <div class="col-md-6 mt-2">
+                        <a href="accept_schedule?application_id={{schedule['application_id']}}&project_id={{project['_id']}}"  class="btn btn-success w-100" style="border-radius:50px;">Accept</a>
+                    </div>
+                    <div class="col-md-6 mt-2">
+                        <a href="reject_schedule?application_id={{schedule['application_id']}}&project_id={{project['_id']}}"  class="btn btn-danger w-100" style="border-radius:50px;">Reject</a>
+                    </div>
+                    {% endif %}
+                    {% if session["role"] == 'Client' and schedule['status'] == status_schedule_accepted or schedule['status'] == status_first_payment:%}
+                    <div class="col-md-3"></div>
+                    <div class="col-md-6 mt-2">
+                        <a href="payAmount?application_id={{schedule['application_id']}}&project_id={{project['_id']}}"  class="btn btn-success w-100" style="border-radius:50px;">Pay Amount</a>
+                    </div>
+                    {% endif %}
+                    {% if session["role"] == 'Client' and schedule['status'] == "Project Completed":%}
+                    <div class="col-md-3"></div>
+                    <div class="col-md-6 mt-2">
+                        <a href="pay_remaining_amount?application_id={{schedule['application_id']}}&project_id={{project['_id']}}"  class="btn btn-primary w-100" style="border-radius:50px;">Pay Amount</a>
+                    </div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+                {% endfor %}
+            </div>
+          </div>
+     </div>
+</div>

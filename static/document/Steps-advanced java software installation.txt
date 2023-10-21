@@ -1,0 +1,8 @@
+
+Installed eclipse jdk 2022 version
+
+installed xmaap latest version
+
+connecting xmaap with java eclipse (start xmaap apache first and then start mysql ) and also add mysql connector to eclipse through buildpath
+
+

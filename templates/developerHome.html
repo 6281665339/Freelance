@@ -1,0 +1,23 @@
+{% include 'developerHead.html'%}
+
+<div class="container">
+    <div class="row">
+        {% for developer in developers:%}
+           <div class="col-md-4">
+               <div class="card mt-5 p-3" style="border-radius: 50px 20px;box-shadow: 5px 10px #888888;">
+                   <div class=" text-center mt-1"><b>{{developer['name']}}</b></div>
+                   <div class="text-center mt-1">{{developer['email']}}</div>
+                   <div class="text-center mt-1">{{developer['phone']}}</div>
+                   <div class="row">
+                       <div class=" col-md-6 mt-2">
+                           <a href="uploadResume" class="btn btn-primary w-100" style="font-size:15px">Upload Resume</a>
+                       </div>
+                       <div class=" col-md-6 mt-2">
+                           <a href="change_developer_password?developer_id={{developer['_id']}}" class="btn btn-info w-100" style="font-size:15px">Change Password</a>
+                       </div>
+                   </div>
+               </div>
+           </div>
+        {% endfor %}
+    </div>
+</div>

@@ -1,0 +1,31 @@
+{% if session["role"] == 'Client':%}
+    {% include 'clientHead.html' %}
+{% elif session["role"] == 'Developer':%}
+    {% include 'developerHead.html' %}
+{% else:%}
+    {% include 'head.html' %}
+{% endif %}
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-3"></div>
+        <div class="col-md-6 mt-4">
+            <form action="report1" method="post">
+                <input type="hidden" name="project_id" value="{{project_id}}">
+                <div class="text-center h3 mt-3">Write Report</div>
+                <div class=" card mt-4 p-3" style="border-radius: 50px 20px;box-shadow: 5px 10px #888888;" >
+                    <div class="mt-2">
+                        <label for="report_summary" class="form-label">Report Summary</label>
+                        <textarea name="report_summary" id="report_summary" placeholder="Enter Summary" required class="form-control"></textarea>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-8"></div>
+                        <div class="col-md-4 mt-2">
+                            <input type="submit" value="Report" class="btn btn-danger w-100">
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

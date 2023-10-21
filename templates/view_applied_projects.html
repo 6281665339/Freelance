@@ -1,0 +1,65 @@
+{% if session["role"] == 'Admin':%}
+    {% include 'adminHead.html' %}
+{% elif session["role"] == 'Client':%}
+    {% include 'clientHead.html' %}
+{% elif session["role"] == 'Developer':%}
+    {% include 'developerHead.html' %}
+{% else:%}
+    {% include 'head.html' %}
+{% endif %}
+
+<div class="container">
+    <div class="row">
+        <div class="text-center mt-1" style="font-size:30px;color:black">Applications</div>
+            {% for application in applications:%}
+            {% set developer = get_developer_id(application['developer_id'])%}
+            {% set average_rating = get_developer_id_by_reviews(application['developer_id'])%}
+            {% set project = get_project_id(application['project_id'])%}
+            <div class="col-md-5 mt-1">
+                <div class=" card mt-2 p-3" style="border-radius: 50px 20px;box-shadow: 5px 10px #888888;" >
+                    <div class="mt-1">
+                         <div class="text-muted">Developer Name</div>
+                         <a href="viewDeveloperDetails?developer_id={{developer['_id']}}">{{developer['name']}}  &nbsp;{{average_rating}}</a>
+                   </div>
+                      <div class="mt-1">
+                          <div class="text-muted">Project Title</div>
+                          <div class=""><b>{{project['project_title']}}</b></div>
+                   </div>
+                    <div class="mt-1">
+                        <div class="text-muted">Date</div>
+                        <div class=""><b>{{application['date'].strftime("%x")}}</b></div>
+                   </div>
+                    <div class="mt-1">
+                        <div class="text-muted">Status</div>
+                        <div class=""><b>{{application['status']}}</b></div>
+                   </div>
+                    <div class="row">
+                         {% if session["role"] == 'Client' and application['status'] == status_applied_for_project:%}
+                         <div class="col-md-6 mt-2">
+                            <a href="accept_application?application_id={{application['_id']}}&project_id={{project['_id']}}"  class="btn btn-success w-100" style="border-radius:50px;">Accept</a>
+                        </div>
+                         <div class="col-md-6 mt-2">
+                            <a href="reject_application?application_id={{application['_id']}}&project_id={{project['_id']}}"  class="btn btn-danger w-100" style="border-radius:50px;">Reject</a>
+                        </div>
+                        {% endif %}
+                    {% if session["role"] == 'Client' and application['status'] == status_application_accepted:%}
+                        <div class="col-md-3"></div>
+                         <div class="col-md-6 mt-2">
+                            <a href="add_schedule?application_id={{application['_id']}}"  class="btn btn-success w-100" style="border-radius:50px;">Schedule</a>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        <div class="col-md-1"></div>
+        <div class="col-md-6 mt-2">
+            <div style="text-align:center">
+                <h4>Developer Resume</h4>
+                {% for resume in application['resume']%}
+                    <iframe src="../static/resume/{{resume}}" frameborder="0" height="500px" width="100%"></iframe>
+                  {% endfor %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>

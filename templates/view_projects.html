@@ -1,0 +1,285 @@
+{% if session["role"] == 'Admin':%}
+    {% include 'adminHead.html' %}
+{% elif session["role"] == 'Client':%}
+    {% include 'clientHead.html' %}
+{% elif session["role"] == 'Developer':%}
+    {% include 'developerHead.html' %}
+{% else:%}
+    {% include 'head.html' %}
+{% endif %}
+
+<div class="container">
+    <div class="row">
+        <form action="view_projects" method="get">
+            <div class="row">
+            <div class="col-md-4">
+                  <div class="mt-3">
+                    <select name="category_id" id="category_id" required class="form-control" onchange="this.form.submit()">
+                        <option value="">Choose Category</option>
+                        {% for category in categories%}
+                        <option value="{{category['_id']}}">{{category['category_name']}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-4">
+                  <div class="mt-3">
+                    <select name="skill" id="skill" required class="form-control" onchange="this.form.submit()">
+                        <option value="">Choose Skill</option>
+                        {% for skill in skills:%}
+                        <option value="{{skill}}">{{skill}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-4 mt-3">
+                <input type="text" name="project_title" class="form-control" placeholder="Search For Project Title" onkeyup="this.form.submit()">
+            </div>
+            </div>
+        </form>
+            {% for project_detail in project_details:%}
+            {% set category = get_category_id(project_detail['category_id'])%}
+            {% set client = get_client_id(project_detail['client_id'])%}
+            {% set average_rating = get_client_id_by_reviews(project_detail['client_id'])%}
+
+            {% set developer = get_project_id_by_application(project_detail['_id'])%}
+            <div class=" card mt-3 p-3" style="border-radius: 50px 20px;box-shadow: 5px 10px #888888;" >
+                <div class="row">
+                 <div class="col-md-2 mt-1">
+                     <div class="text-muted">Client Name</div>
+                    <a href="viewClientDetails?client_id={{client['_id']}}">{{client['name']}} &nbsp;{{average_rating}}</a>
+                </div>
+                <div class="col-md-2">
+                    <div class="text-muted">Category Name</div>
+                    <div class=""><b>{{category['category_name']}}</b></div>
+                </div>
+                <div class="col-md-2 mt-1">
+                    <div class="text-muted">Project Title</div>
+                    <div class=""><b>{{project_detail['project_title']}}</b></div>
+                </div>
+                <div class="col-md-1 mt-1">
+                    <div class="text-muted">Skills</div>
+                    <div class=""><b>{{project_detail['skills']}}</b></div>
+                </div>
+                <div class="col-md-1 mt-1">
+                    <div class="text-muted">Price</div>
+                    <div class=""><b>$ {{project_detail['project_cost']}}</b></div>
+                </div>
+                <div class="col-md-1 mt-1">
+                     <div class="text-muted">Date</div>
+                    <div class=""><b>{{project_detail['date'].date()}} {{project_detail['date'].strftime("%I")}}:{{project_detail['date'].strftime("%M")}} {{project_detail['date'].strftime("%p")}}</b></div>
+                </div>
+                    <div class="col-md-3 mt-1">
+                        <div class="text-muted">Status</div>
+                        <div class=""><b>{{project_detail['status']}}</b></div>
+                   </div>
+                    <div class="col-md-10 mt-1"></div>
+                <div class="col-md-2 mt-1">
+                    <a href="../static/document/{{project_detail['project_doc']}}"  class="btn btn-primary w-70" style="border-radius:50px;">View Documents</a>
+                </div>
+                </div>
+                 <div class="mt-2">
+                    <div class="text-muted">Description</div>
+                    <div class="mt-1 h6">{{project_detail['description']}}</div>
+                </div>
+                {% if developer!=None: %}
+                <div class="row">
+                    <div class="col-md-2 mt-2">
+                         <div class="text-muted">Developer Name</div>
+                         <a href="viewDeveloperDetails?developer_id={{developer['_id']}}">{{developer['name']}}  &nbsp;{{average_rating}}</a>
+                    </div>
+                </div>
+                {% endif %}
+                <div class="row">
+                    {% if session["role"] == 'Developer' and project_detail['status'] == status_application_posted :%}
+                    {% set is_true = is_requested_for_application(project_detail['application_id'])%}
+                        {% if is_true:%}
+                             <div class="col-md-2 mt-1">
+                                <a href="apply_for_project?project_id={{project_detail['_id']}}"  class="btn btn-secondary w-90" style="border-radius:50px;">Apply For Project</a>
+                            </div>
+                        {% endif %}
+                    {% endif %}
+                     {% if project_detail['status'] == status_application_posted or project_detail['status'] == status_add_schedule or project_detail['status'] == status_schedule_accepted or project_detail['status'] == status_Development_Started or project_detail['status'] == status_project_completed or project_detail['status'] == "Project Assigned To Developer":%}
+                     <div class="col-md-2 mt-1">
+                        <a href="view_applied_projects?project_id={{project_detail['_id']}}"  class="btn btn-primary w-90" style="border-radius:50px;">View Applications</a>
+                    </div>
+                    {% endif %}
+                    {% if project_detail['status'] == status_add_schedule or project_detail['status'] == status_schedule_accepted or project_detail['status'] == status_Development_Started or project_detail['status'] == status_project_completed or project_detail['status'] == "Project Assigned To Developer":%}
+                      <div class="col-md-1 mt-1">
+                          {% if session['role'] == "Developer":%}
+                            <button class="btn btn-primary" onclick="openChat('{{client['_id']}}','{{client['name']}}')">Chat</button>
+                          {% endif %}
+                          {% if session['role'] == "Client": %}
+                          {% set developer = get_application_by_developer(project_detail['_id'])%}
+                            <button class="btn btn-primary" onclick="openChat('{{developer['_id']}}','{{developer['name']}}')">Chat</button>
+                          {% endif %}
+                    </div>
+                    {% endif %}
+                    {% if project_detail['status'] == status_add_schedule or project_detail['status'] == status_schedule_accepted or project_detail['status'] == status_Development_Started or project_detail['status'] == status_project_completed:%}
+                     <div class="col-md-2 mt-1">
+                        <a href="view_schedule?project_id={{project_detail['_id']}}"  class="btn btn-success w-100" style="border-radius:50px;">View Schedule</a>
+                    </div>
+                    {% endif %}
+                    {% if project_detail['status'] == status_add_schedule or project_detail['status'] == status_schedule_accepted or project_detail['status'] == status_Development_Started or project_detail['status'] == status_project_completed:%}
+                    <div class="col-md-2 mt-1">
+                        <a href="view_payments?project_id={{project_detail['_id']}}" class="btn btn-secondary w-100"  style="border-radius:50px;">Payments</a>
+                    </div>
+                    {% endif %}
+                    {% if project_detail['status'] == status_add_schedule or project_detail['status'] == status_schedule_accepted or project_detail['status'] == status_Development_Started:%}
+                    <div class="col-md-2 mt-1">
+                    {% if session["role"] == 'Developer' and project_detail['status'] == status_Development_Started %}
+                        <a href="make_as_complete?project_id={{project_detail['_id']}}" class="btn btn-info w-100" style="border-radius:50px;">Make As Complete</a>
+                    {% endif %}
+                    </div>
+                    {% endif %}
+                     {% if  project_detail['status'] == status_Development_Started or project_detail['status'] == status_project_completed:%}
+                    <div class="col-md-2 mt-1">
+                        {% if session["role"] == 'Developer' %}
+                        <a href="project_reviews?project_id={{project_detail['_id']}}"  style="border-radius:50px;">Review For Client</a>
+                        {% endif %}
+                         {% if session["role"] == 'Client' %}
+                        <a href="project_reviews?project_id={{project_detail['_id']}}"  style="border-radius:50px;">Review For Developer</a>
+                        {% endif %}
+                    </div>
+                     <div class="col-md-1 mt-1">
+                         {% if session["role"] == 'Developer' or session["role"] == 'Client': %}
+                            <a href="report?project_id={{project_detail['_id']}}" class="btn btn-danger w-100"  style="border-radius:50px;">Report</a>
+                         {% endif %}
+                    {% endif %}
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+</div>
+
+<script>
+    let refreshIntervalId = null;
+    $(document).ready(function(){
+        getMessages();
+        $("#btn-send").on("click", ()=>{
+            sendMessage()
+        })
+    });
+    function openChat(receiver_id, receiver_name){
+        $("#receiver_id").val(receiver_id);
+        $("#receiver_name").html(receiver_name);
+        if($(".chat").hasClass("chat-toggle")){
+            getMessages();
+            $(".chat").removeClass("chat-toggle");
+            intervalManager(true, getMessage, 1000);
+        }else{
+            $(".chat").addClass("chat-toggle");
+            intervalManager(false);
+        }
+    }
+    function closeChat(){
+        $(".chat").addClass("chat-toggle");
+        intervalManager(false);
+    }
+     function getMessages() {
+        $.get("get_messages?receiver_id="+$("#receiver_id").val(), function(data, status){
+            let messages = data['messages']
+            console.log(typeof(messages))
+            console.log(messages)
+            let display_message = "";
+            for(let i=0; i<messages.length; i++){
+                if(messages[i]['sender_id']!=$("#receiver_id").val()){
+                    display_message = display_message + `<div class="text-end text-primary pe-3 mt-1">${messages[i]['message']}</div>
+                                                        <div class="text-end pe-3 message-text text-muted" >${messages[i]['date']}</div>`
+                }else{
+                    display_message = display_message + `<div class="text-start text-success ps-3 mt-1">${messages[i]['message']}</div>
+                                                        <div class="text-start ps-3 message-text text-muted" >${messages[i]['date']}</div>`
+                }
+
+            }
+            console.log(display_message)
+            $(".chat-body-messages").html(display_message)
+            var chat_body_messages = document.getElementById("chat-body-messages");
+            chat_body_messages.scrollTop = chat_body_messages.scrollHeight;
+            setAsReadReceiver()
+            setAsReadSender()
+        });
+
+    }
+    function sendMessage() {
+        let message = $("#message").val()
+        if(message == ""){
+            alert("Enter Message")
+        }else{
+            $.get("send_messages?receiver_id="+$("#receiver_id").val()+"&message="+message, function(data, status){
+                console.log(data)
+                $("#message").val("")
+            });
+        }
+
+    }
+    function setAsReadReceiver(){
+        $.get("set_as_read_receiver?receiver_id="+$("#receiver_id").val(), function(data, status){
+              console.log(data)
+              isUpdateReceiver = true
+        });
+    }
+    function setAsReadSender(){
+        $.get("set_as_read_sender?receiver_id="+$("#receiver_id").val(), function(data, status){
+              console.log(data)
+              isUpdateSender = true
+        });
+    }
+    function getMessage(){
+            console.log("inside")
+            $.get("get_message?receiver_id="+$("#receiver_id").val(), function(data, status){
+            let messages = data['messages']
+            let display_message = "";
+            for(let i=0; i<messages.length; i++){
+                if(messages[i]['sender_id']!=$("#receiver_id").val()){
+                    display_message = display_message + `<div class="text-end text-primary pe-3 mt-1">${messages[i]['message']}</div>
+                                                        <div class="text-end pe-3 message-text text-muted" >${messages[i]['date']}</div>`
+                }else{
+                    display_message = display_message + `<div class="text-start text-success ps-3 mt-1">${messages[i]['message']}</div>
+                                                        <div class="text-start ps-3 message-text text-muted" >${messages[i]['date']}</div>`
+                }
+
+            }
+            $(".chat-body-messages").append(display_message)
+            var chat_body_messages = document.getElementById("chat-body-messages");
+            chat_body_messages.scrollTop = chat_body_messages.scrollHeight;
+        });
+    }
+
+    let intervalID = null;
+    function intervalManager(flag,getMessage, time) {
+       if(flag)
+         intervalID =  setInterval(getMessage, time);
+       else
+         clearInterval(intervalID);
+    }
+</script>
+
+{% if session['role'] == "Client" or session['role'] == "Developer" :%}
+<input type="hidden" id="receiver_id">
+<div id="chat" class="chat chat-toggle ">
+    <div class="">
+        <div class="row p-2">
+            <div class="col-md-10" id="receiver_name"></div>
+            <div class="col-md-2 text-end chat-close-btn"  onclick="closeChat()">X</div>
+        </div>
+        <hr>
+        <div class="chat-body">
+            <div class="chat-body-messages" id="chat-body-messages">
+
+            </div>
+            <div class="chat-body-input">
+                <div class="row">
+                    <div class="col-sm-10">
+                        <input type="text" id="message" class="form-control" placeholder="Write your message here">
+                    </div>
+                    <div class="col-sm-2 pt-2">
+                        <i class="material-icons" id="btn-send">send</i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}

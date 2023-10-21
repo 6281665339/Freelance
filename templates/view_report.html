@@ -1,0 +1,64 @@
+{% if session["role"] == 'Admin':%}
+    {% include 'adminHead.html' %}
+{% elif session["role"] == 'Client':%}
+    {% include 'clientHead.html' %}
+{% elif session["role"] == 'Developer':%}
+    {% include 'developerHead.html' %}
+{% else:%}
+    {% include 'head.html' %}
+{% endif %}
+
+<div style="position:absolute;left:0;top:100px;z-index:1000;width:100%;">
+    <div class="container">
+        <div class="row">
+            {% for report in reports:%}
+            {% set client = get_client_id(report['client_id'])%}
+            {% set developer = get_developer_id(report['developer_id'])%}
+            <div class="col-md-6">
+                 <div class=" card mt-4 p-3" style="border-radius: 50px 20px;box-shadow: 5px 10px #888888;" >
+                     <div class="row">
+                         <div class="col-md-3 mt-1">
+                            <div class="text-muted">Client Name</div>
+                            <div class=""><b>{{client['name']}}</b></div>
+                        </div>
+                         <div class="col-md-3 mt-1">
+                            <div class="text-muted">Developer Name</div>
+                            <div class=""><b>{{developer['name']}}</b></div>
+                        </div>
+                          <div class="col-md-2 mt-1">
+                            <div class="text-muted"> Date</div>
+                             <div class=""><b>{{report['date'].strftime("%x")}}</b></div>
+                        </div>
+                          <div class="col-md-4 mt-1 mb-1">
+                            <div class="text-muted">Status</div>
+                             <div class=""><b>{{report['status']}}</b></div>
+                        </div>
+                         <hr>
+                          <div class="mt-1 mb-1">
+                            <div class="text-muted">Report Summary</div>
+                             <div class=""><b>{{report['report_summary']}}</b></div>
+                        </div>
+                         {% if session['role'] == "Admin" :%}
+                         {% if report['status'] == "Report by Client" or report['status'] == "Report by Developer":%}
+                          <div class="row">
+                              <div class="col-md-8"></div>
+                              <div class="col-md-4">
+                                  <a href="replay_for_report?report_id={{report['_id']}}" class="btn btn-primary w-100">Reply For Report</a>
+                              </div>
+                          </div>
+                         {% endif %}
+                         {% endif %}
+                         {% if report['status'] == "Reply by Admin":%}
+                         <hr>
+                          <div class="mt-1">
+                            <div class="text-muted">Reply For Report</div>
+                             <div class=""><b>{{report['report_replay']}}</b></div>
+                        </div>
+                         {% endif %}
+                     </div>
+                 </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>

@@ -1,0 +1,25 @@
+ {% include 'adminHead.html' %}
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-3"></div>
+        <div class="col-md-6 mt-4">
+            <form action="replay_for_report1" method="post">
+                <input type="hidden" name="report_id" value="{{report_id}}">
+                <div class="text-center h3 mt-3">Reply For Report</div>
+                <div class=" card mt-4 p-3" style="border-radius: 50px 20px;box-shadow: 5px 10px #888888;" >
+                    <div class="mt-2">
+                        <label for="report_replay" class="form-label">Reply For Report</label>
+                        <textarea name="report_replay" id="report_replay" placeholder="Enter Reply" required class="form-control"></textarea>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-8"></div>
+                        <div class="col-md-4 mt-3">
+                            <input type="submit" value="Reply" class="btn btn-success w-100">
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

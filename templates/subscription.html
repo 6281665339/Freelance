@@ -1,0 +1,98 @@
+{% if session["role"] == 'Admin':%}
+    {% include 'adminHead.html' %}
+{% elif session["role"] == 'Client':%}
+    {% include 'clientHead.html' %}
+{% elif session["role"] == 'Developer':%}
+    {% include 'developerHead.html' %}
+{% else:%}
+    {% include 'head.html' %}
+{% endif %}
+
+<div style="position:absolute;left:0;top:100px;z-index:1000;width:100%;">
+
+<div class="container-fluid">
+    {% if session['role'] == "Admin":%}
+    <div class="row">
+        <div class="col-md-9"></div>
+        <div class="col-md-3">
+            <a href="add_subscription" class="btn btn-success w-100" style="color:white;margin-top:20px;border-radius:50px;">Add Subscription</a>
+        </div>
+    </div>
+    {% endif %}
+    <div class="row">
+        <div class="col-md-6 border border-bottom-0 border-primary">
+            <div class="text-center h4 mt-3">Subscription Plans</div>
+             <div class="row">
+            {% for subscription_plan in subscription_plans:%}
+                <div class="col-md-6">
+                    <div class="card mt-5 p-3" style="border-radius: 50px 20px;box-shadow: 5px 10px #888888;">
+                         <div class="mt-1">
+                            <div class="text-muted">Validity days</div>
+                            <div class=""><b>{{subscription_plan['validity_days']}} days</b></div>
+                        </div>
+                         <div class="mt-1">
+                            <div class="text-muted">Plan Price</div>
+                            <div class=""><b>$ {{subscription_plan['plan_price']}}</b></div>
+                        </div>
+                        <div class="row">
+                             <div class="col-md-4 mt-1">
+                                <div class="text-muted">Plan For</div>
+                                <div class=""><b>{{subscription_plan['plan_for']}}</b></div>
+                            </div>
+                            {% if session['role'] == "Client" or session['role'] == "Developer"%}
+                            {% set is_true= get_expiry_date(subscription_plan['_id'])%}
+                                {% if is_true:%}
+                                    <div class="col-md-8 mt-2">
+                                        <a href="subscribe?subscription_plan_id={{subscription_plan['_id']}}" class="btn btn-success w-100" style="border-radius:50px;">Subscribe</a>
+                                    </div>
+                                {% endif %}
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+             </div>
+        </div>
+        <div class="col-md-6">
+            <div class="row">
+            <div class="text-center h4 mt-3">Subscribed Details</div>
+                 <div class="row">
+                {% for subscription in subscriptions:%}
+                {% set subscription_plan = get_subscription_plan_id(subscription['subscription_plan_id'])%}
+                <div class="col-md-6">
+                    <div class="card mt-5 p-3" style="border-radius: 50px 20px;box-shadow: 5px 10px #888888;">
+                        {% if session['role'] == "Developer":%}
+                        {% set developer = get_developer_id_by_subscriber(subscription['subscriber_id'])%}
+                         <div class="mt-1">
+                            <div class="text-muted">Subscriber Name</div>
+                             <div class=""><b>{{developer['name']}}</b></div>
+                        </div>
+                        {% endif %}
+                        {% if session['role'] == "Client":%}
+                        {% set client = get_client_id_by_subscriber(subscription['subscriber_id'])%}
+                         <div class="mt-1">
+                            <div class="text-muted">Subscriber Name</div>
+                             <div class=""><b>{{client['name']}}</b></div>
+                        </div>
+                        {% endif %}
+                          <div class="mt-1">
+                            <div class="text-muted">Validity days</div>
+                            <div class=""><b>{{subscription_plan['validity_days']}} days</b></div>
+                        </div>
+                        <div class="mt-1">
+                            <div class="text-muted">Subscribed Date</div>
+                             <div class=""><b>{{subscription['date'].strftime("%x")}}</b></div>
+                        </div>
+                         <div class="mt-1">
+                            <div class="text-muted">Expiry Date</div>
+                             <div class=""><b>{{subscription['expiry_date'].strftime("%x")}}</b></div>
+                        </div>
+                   </div>
+             </div>
+            {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+

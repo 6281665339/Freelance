@@ -1,0 +1,68 @@
+{% if session["role"] == 'Client':%}
+    {% include 'clientHead.html' %}
+{% elif session["role"] == 'Developer':%}
+    {% include 'developerHead.html' %}
+{% else:%}
+    {% include 'head.html' %}
+{% endif %}
+
+{% if session['role'] == "Client":%}
+<div style="position:absolute;left:0;top:100px;z-index:1000;width:100%;">
+<div class="container">
+  <div class="row">
+    <div class="text-center h4">View Developers</div>
+    <table class="table table-primary table-bordered mt-4">
+      <tr>
+        <thead>
+          <th>Developer Name</th>
+          <th>Email</th>
+          <th>Phone Number</th>
+          <th>Chat</th>
+        </thead>
+      </tr>
+      <tbody>
+       <tr>
+        <td>{{developer['name']}}</td>
+        <td>{{developer['email']}}</td>
+        <td>{{developer['phone']}}</td>
+        <td>
+            <a href="view_chat" class="btn btn-success w-100">Chat</a>
+        </td>
+       </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+</div>
+{% endif %}
+
+
+{% if session['role'] == "Developer":%}
+<div style="position:absolute;left:0;top:100px;z-index:1000;width:100%;">
+<div class="container">
+  <div class="row">
+    <div class="text-center h4">View Clients</div>
+    <table class="table table-primary table-bordered text-center mt-4">
+      <tr>
+        <thead>
+          <th>Client Name</th>
+          <th>Email</th>
+          <th>Phone Number</th>
+          <th>Chat</th>
+        </thead>
+      </tr>
+      <tbody>
+       <tr>
+        <td>{{client['name']}}</td>
+        <td>{{client['email']}}</td>
+        <td>{{client['phone']}}</td>
+        <td>
+            <a href="view_chat" class="btn btn-success w-100">Chat</a>
+        </td>
+       </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+</div>
+{% endif %}

@@ -1,0 +1,44 @@
+{% if session["role"] == 'Admin':%}
+    {% include 'adminHead.html' %}
+{% elif session["role"] == 'Client':%}
+    {% include 'clientHead.html' %}
+{% elif session["role"] == 'Developer':%}
+    {% include 'developerHead.html' %}
+{% else:%}
+    {% include 'head.html' %}
+{% endif %}
+<div style="position:absolute;left:0;top:100px;z-index:1000;width:100%;">
+<div class="container">
+  <div class="row">
+    <div class="text-center h4">View Payments</div>
+    <table class="table table-primary table-bordered mt-4">
+      <tr>
+        <thead>
+          <th>Client Name</th>
+          <th>Developer Name</th>
+          <th>Project Title</th>
+          <th>Amount</th>
+          <th>Date</th>
+          <th>status</th>
+        </thead>
+      </tr>
+      <tbody>
+       {% for project in projects:%}
+       {% for payment in project['Payments']:%}
+       {% set client = get_client_id(project['client_id'])%}
+       {% set developer = get_developer_id_by_application_payments(payment['application_id'])%}
+       <tr>
+        <td>{{client['name']}}</td>
+        <td>{{developer['name']}}</td>
+        <td>{{project['project_title']}}</td>
+        <td>$ {{payment['amount']}}</td>
+        <td>{{payment['date'].date()}} {{payment['date'].strftime("%I")}}:{{payment['date'].strftime("%M")}} {{payment['date'].strftime("%p")}}</td>
+        <td>{{payment['status']}}</td>
+       </tr>
+        {% endfor %}
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+</div>
